@@ -37,7 +37,7 @@ struct hand * free_hand(struct hand * h){
   for (i = 0; i < h->size; i++){
     h->cards[i] = free_card(h->cards[i]);
   }
-  
+
   free(h);
   return NULL;
 }
@@ -69,12 +69,22 @@ struct card * remove_hand(struct hand * h0, struct hand * h1){
   max = h0->size;
   for (i = 0; i < max; i++){
     c = remove_card(h0->cards[i], h1);
-    // if (i != max - 1){
-    //   c = free_card(c);
-    // }
+
   }
   return c;
 }
+
+struct card * remove_handh(struct hand * h0, struct hand * h1){
+  int i, max;
+  struct card * c;
+  max = h0->size;
+  for (i = 0; i < max; i++){
+    c = remove_cardh(h0->cards[i], h1);
+
+  }
+  return c;
+}
+
 struct card * remove_card(struct card * c, struct hand * h){
   int i, max;
   max = h->size;
@@ -87,6 +97,26 @@ struct card * remove_card(struct card * c, struct hand * h){
     printf("card not removed\n");
     return NULL;
   }
+  //h->cards[i] = free_card(h->cards[i]);
+  h->cards[i] = h->cards[max - 1];
+  h->cards[max - 1] = NULL;
+  h->size--;
+  return c;
+}
+
+struct card * remove_cardh(struct card * c, struct hand * h){
+  int i, max;
+  max = h->size;
+  for (i = 0; i < max; i++){
+    if (card_cmp(c, h->cards[i]) == 0){
+      break;
+    }
+  }
+  if (i == max){
+    printf("card not removed\n");
+    return NULL;
+  }
+  h->cards[i] = free_card(h->cards[i]);
   h->cards[i] = h->cards[max - 1];
   h->cards[max - 1] = NULL;
   h->size--;

@@ -44,7 +44,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   }
   if (playing->size > 0){
     free_card(top);
-    top = remove_hand(playing, h);
+    top = remove_handh(playing, h);
     remove_card(top, playing);
   }
   playing = free_hand(playing);
