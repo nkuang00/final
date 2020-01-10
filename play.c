@@ -34,14 +34,19 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   playing = create_hand(0);
   if (!add_str(input, playing)){
     printf("error: invalid input. check format of cards\n");
+    playing = free_hand(playing);
     return top;
   }
   if (!valid_play(playing, h, top)){
     printf("error: invalid cards. check sequence of cards\n");
+    playing = free_hand(playing);
     return top;
   }
-  top = remove_hand(playing, h);
-  remove_card(top, playing);
+  if (playing->size > 0){
+    free_card(top);
+    top = remove_hand(playing, h);
+    remove_card(top, playing);
+  }
   playing = free_hand(playing);
   return top;
 }
@@ -99,7 +104,7 @@ int contains_repeats(struct hand * p, struct hand * h){
   return 0;
 }
 
-//default: 5 cards
+
 struct hand * create_hand(int n){
   struct hand * h = malloc(sizeof(struct hand));
   h->size = 0;

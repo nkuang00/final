@@ -9,5 +9,6 @@ int main(){
   top = draw();
 
   play(top);
+  
   return 0;
 }

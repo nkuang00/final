@@ -8,7 +8,7 @@ void add_card(struct card * c, struct hand * h){
 int add_str(char * str, struct hand * h){
   while (str != NULL){
     char * substr = strsep (&str, " ");
-    if (strlen(substr) < 2){
+    if (strlen(substr) != 2){
       return 0;
     }
     if (strchr("RGBY",*(substr))==NULL || strchr("0123456789",*(substr + 1))==NULL){
@@ -37,6 +37,8 @@ struct hand * free_hand(struct hand * h){
   for (i = 0; i < h->size; i++){
     h->cards[i] = free_card(h->cards[i]);
   }
+  
+  free(h);
   return NULL;
 }
 
@@ -67,9 +69,9 @@ struct card * remove_hand(struct hand * h0, struct hand * h1){
   max = h0->size;
   for (i = 0; i < max; i++){
     c = remove_card(h0->cards[i], h1);
-    if (i != max - 1){
-      c = free_card(c);
-    }
+    // if (i != max - 1){
+    //   c = free_card(c);
+    // }
   }
   return c;
 }
