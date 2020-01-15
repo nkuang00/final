@@ -1,19 +1,19 @@
 all: deck.o display.o draw.o play.o main.o
 	gcc -o program deck.o display.o draw.o play.o main.o
 
-main.o: main.c play.h display.h draw.h deck.h
+main.o: main.c main.h play.h display.h draw.h deck.h headers.h
 	gcc -c main.c
 
-play.o: play.c play.h display.h draw.h deck.h
+play.o: play.c play.h display.h draw.h deck.h headers.h
 	gcc -c play.c
 
-draw.o: draw.c draw.h display.h deck.h
+draw.o: draw.c draw.h display.h deck.h headers.h
 	gcc -c draw.c
 
-display.o: display.c display.h deck.h
+display.o: display.c display.h deck.h headers.h
 	gcc -c display.c
 
-deck.o: deck.c deck.h
+deck.o: deck.c deck.h headers.h
 	gcc -c deck.c
 
 run:

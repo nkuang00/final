@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <fcntl.h>
-
+#include "headers.h"
 //struct for cards
 //colors: R, G, Y, B (wilds and +4 will be w)
 //types: 0-9 [v (reverse), s (skip), t (+2), f(+4)]
