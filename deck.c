@@ -88,12 +88,12 @@ struct card * remove_handh(struct hand * h0, struct hand * h1){
 struct card * remove_card(struct card * c, struct hand * h){
   int i, max;
   max = h->size;
-  for (i = 0; i < max; i++){
+  for (i = max - 1; i > -1; i--){
     if (card_cmp(c, h->cards[i]) == 0){
       break;
     }
   }
-  if (i == max){
+  if (i == -1){
     printf("card not removed\n");
     return NULL;
   }
@@ -107,12 +107,12 @@ struct card * remove_card(struct card * c, struct hand * h){
 struct card * remove_cardh(struct card * c, struct hand * h){
   int i, max;
   max = h->size;
-  for (i = 0; i < max; i++){
+  for (i = max - 1; i > -1; i--){
     if (card_cmp(c, h->cards[i]) == 0){
       break;
     }
   }
-  if (i == max){
+  if (i == -1){
     printf("card not removed\n");
     return NULL;
   }
