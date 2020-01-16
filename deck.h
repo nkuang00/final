@@ -23,3 +23,4 @@ struct card * remove_hand(struct hand * h0, struct hand * h1);
 struct card * remove_card(struct card * c, struct hand * h);
 struct card * remove_handh(struct hand * h0, struct hand * h1);
 struct card * remove_cardh(struct card * c, struct hand * h);
+int is_plus(struct card * c);

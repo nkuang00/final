@@ -7,7 +7,7 @@ int main(){
   //make_deck
   //shuffle_deck
   int draw_shm = make_drawshm();
-  top = draw();
+  top = draw_top();
 
   play(top);
   rem_drawshm(draw_shm);

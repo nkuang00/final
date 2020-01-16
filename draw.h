@@ -4,4 +4,5 @@
 #include "display.h"
 
 struct card * draw();
+struct card * draw_top();
 int draw_n(int n, struct hand * h);

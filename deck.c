@@ -11,7 +11,7 @@ int add_str(char * str, struct hand * h){
     if (strlen(substr) != 2){
       return 0;
     }
-    if (strchr("RGBY",*(substr))==NULL || strchr("0123456789",*(substr + 1))==NULL){
+    if (strchr("RGBY",*(substr))==NULL || strchr("01234567+",*(substr + 1))==NULL){
       return 0;
     }
 
@@ -121,4 +121,11 @@ struct card * remove_cardh(struct card * c, struct hand * h){
   h->cards[max - 1] = NULL;
   h->size--;
   return c;
+}
+
+int is_plus(struct card * c){
+  if (c->type == '+'){
+    return 1;
+  }
+  return 0;
 }

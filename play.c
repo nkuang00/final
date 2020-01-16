@@ -17,19 +17,76 @@ void play(struct card * top){
     if (strcmp(input, "quit") == 0){
       h1 = free_hand(h1);
       top = free_card(top);
+      printf("ok bye loser\n");
       break;
     }
     if (strcmp(input, "draw") == 0){
-      draw_n(1, h1);
+      int draw_shm;
+      int * draw_val;
+      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+      draw_val = shmat(draw_shm, 0, 0);
+      if (*draw_val == 0){
+        draw_n(1, h1);
+      }
+      else{
+        draw_n(*draw_val, h1);
+        *draw_val = 0;
+      }
+      shmdt(draw_val);
     }
     else{
       top = play_cards(input, top, h1);
     }
     printf("\n");
+    if (h1->size == 0){
+      h1 = free_hand(h1);
+      top = free_card(top);
+      printf("no more cards. you win! :0\n");
+      break;
+    }
   }
 }
 
 struct card * play_cards(char * input, struct card * top, struct hand * h){
+  int draw_shm;
+  int * draw_val;
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+  draw_val = shmat(draw_shm, 0, 0);
+  if (*draw_val != 0){
+    shmdt(draw_val);
+    return play_cards_plus(input, top, h);
+  }
+  else{
+    struct hand * playing;
+    playing = create_hand(0);
+    if (!add_str(input, playing)){
+      printf("error: invalid input. check format of cards\n");
+      playing = free_hand(playing);
+      return top;
+    }
+    if (!valid_play(playing, h, top)){
+      printf("error: invalid cards. check sequence of cards\n");
+      playing = free_hand(playing);
+      return top;
+    }
+    if (playing->size > 0){
+      * draw_val += count_draws(playing);
+      printf("draw count: %d\n", *draw_val);
+      free_card(top);
+      top = remove_handh(playing, h);
+      remove_card(top, playing);
+    }
+    playing = free_hand(playing);
+    shmdt(draw_val);
+  }
+  return top;
+}
+
+struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
+  int draw_shm;
+  int * draw_val;
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+  draw_val = shmat(draw_shm, 0, 0);
   struct hand * playing;
   playing = create_hand(0);
   if (!add_str(input, playing)){
@@ -37,18 +94,43 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
     playing = free_hand(playing);
     return top;
   }
-  if (!valid_play(playing, h, top)){
+  if (!valid_play_plus(playing, h, top)){
     printf("error: invalid cards. check sequence of cards\n");
     playing = free_hand(playing);
     return top;
   }
   if (playing->size > 0){
+    * draw_val += count_draws(playing);
+    printf("draw count: %d\n", *draw_val);
     free_card(top);
     top = remove_handh(playing, h);
     remove_card(top, playing);
   }
   playing = free_hand(playing);
   return top;
+}
+
+int count_draws(struct hand *p){
+  int count;
+  int i;
+  count = 0;
+  for (i = 0; i < p->size; i++){
+    count += is_plus(p->cards[i]) * 2;
+  }
+  return count;
+}
+
+int valid_play_plus(struct hand *p, struct hand * h, struct card * top){
+  if (contains_repeats(p, h)){
+    return 0;
+  }
+  int i;
+  for (i = 0; i < p->size; i++){
+    if (!is_plus(p->cards[i])){
+      return 0;
+    }
+  }
+  return 1;
 }
 
 int valid_play(struct hand * p, struct hand * h, struct card * top){
@@ -70,12 +152,25 @@ int valid_play(struct hand * p, struct hand * h, struct card * top){
   return 1;
 }
 
+//also check for all pluses, or all normals
 int colors_match(struct card * c, struct hand * p){
   int i;
   char col;
   col = c->color;
   for (i = 0; i < p->size; i++){
     if (col != p->cards[i]->color){
+      return 0;
+    }
+  }
+  return gen_types_match(c, p);
+}
+
+int gen_types_match(struct card * c, struct hand * p){
+  int i;
+  int t0;
+  t0 = is_plus(p->cards[0]);
+  for (i = 1; i < p->size; i++){
+    if (t0 != is_plus(p->cards[i])){
       return 0;
     }
   }
