@@ -11,3 +11,4 @@
 
 #define DRAW_KEY 87654321
 #define DRAW_SEG_SIZE sizeof(int)
+#define DIRECTION 222222
