@@ -1,4 +1,4 @@
-om#include "deck.h"
+#include "deck.h"
 
 void add_card(struct card * c, struct hand * h){
   *(h->cards + h->size) = c;
