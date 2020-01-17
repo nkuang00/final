@@ -1,25 +1,35 @@
 #include "play.h"
 
 void play(struct card * top){
+  //h1 is player's hand
   struct hand * h1;
   h1 = create_hand(5);
+
   while(1){
     char input[50];
 
+    //print current game info
     printf("top card: ");
     print_card(top);
     printf("\n");
     print_hand(h1);
+
+    //prompts user for a move and stores the shit in input
     printf("your move: ");
     fflush(stdout);
     fgets(input, 50, stdin);
     * strchr(input, '\n') = 0;
+
+    //if quit: free all malloc shits and exits while loop
     if (strcmp(input, "quit") == 0){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("ok bye loser\n");
       break;
     }
+
+    //if draw: draws cards appropriately:
+    //1 if shm for draw is 0; draws shit stored in shm otherwise
     if (strcmp(input, "draw") == 0){
       int draw_shm;
       int * draw_val;
@@ -34,10 +44,25 @@ void play(struct card * top){
       }
       shmdt(draw_val);
     }
+
+    //if entry is not draw/quit
     else{
-      top = play_cards(input, top, h1);
+
+      //if help: print help info
+      if (strcmp(input, "help") == 0){
+        print_help();
+      }
+
+      //interprets input as dumb hand to check for valid input
+      else{
+        top = play_cards(input, top, h1);
+      }
     }
+
     printf("\n");
+
+    //if win condition (hand empty):
+    //frees shit and exits while loop
     if (h1->size == 0){
       h1 = free_hand(h1);
       top = free_card(top);
@@ -47,16 +72,25 @@ void play(struct card * top){
   }
 }
 
+//playing cards, accepts string input, top card, and h
 struct card * play_cards(char * input, struct card * top, struct hand * h){
+
+  //gets shm for dumb draw shit
   int draw_shm;
   int * draw_val;
   draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
   draw_val = shmat(draw_shm, 0, 0);
+
+  //if player needs to draw cards/stack plus or whatever shit:
   if (*draw_val != 0){
     shmdt(draw_val);
     return play_cards_plus(input, top, h);
   }
+
+  //if player does not need to draw cards
   else{
+
+    //takes input and dumps input cards into a "playing" hand
     struct hand * playing;
     playing = create_hand(0);
     if (!add_str(input, playing)){
