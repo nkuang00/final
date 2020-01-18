@@ -85,7 +85,7 @@ int main(){
      direction = shmat(dir_key, 0, 0);
 
      //get top card
-      top_key = shmget(TOP_KEY, sizeof(card), 0644);
+      top_key = shmget(TOP_KEY, sizeof(struct card), 0644);
       if (top_key == -1){
         printf("error tc_key %d: %s\n", errno, strerror(errno));
         exit(1);
@@ -158,7 +158,7 @@ int main(){
     *tc = 1;
 
     //create top card
-    top_key = shmget(TOP_KEY, sizeof(card), IPC_CREAT | 0644);
+    top_key = shmget(TOP_KEY, sizeof(struct card), IPC_CREAT | 0644);
     if (top_key == -1){
       printf("error tc_key %d: %s\n", errno, strerror(errno));
       exit(1);
