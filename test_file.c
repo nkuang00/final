@@ -23,7 +23,7 @@
 #include "play.c"
 #include "deck.c"
 #include "display.c"
-#include "main.c"
+//#include "main.c"
 
 #define NUMBER_OF_PLAYERS_KEY 222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
