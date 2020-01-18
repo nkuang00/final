@@ -12,6 +12,8 @@
 #include <time.h>
 #include <sys/wait.h>
 #include "main.h"
+#include "draw.c"
+#include "play.c"
 
 #define NUMBER_OF_PLAYERS_KEY 222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
