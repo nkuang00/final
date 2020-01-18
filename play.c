@@ -67,7 +67,7 @@ void play(struct card * top){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("no more cards. you win! :0\n");
-      break;
+      //break;
     }
   //}
 }
