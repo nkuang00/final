@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <sys/wait.h>
-#include <main.h>
+#include "main.h"
 
 #define NUMBER_OF_PLAYERS_KEY 222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
