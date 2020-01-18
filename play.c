@@ -25,7 +25,7 @@ void play(struct card * top){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("ok bye loser\n");
-      break;
+      //break;
     }
 
     //if draw: draws cards appropriately:
