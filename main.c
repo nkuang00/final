@@ -146,7 +146,7 @@ int main(){
      }
 
     //create waiting players array
-    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | IPC_EXCL | 0644);
+    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | 0644);
     if (wpa_key == -1){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -214,6 +214,7 @@ int main(){
       printf("\n\n");
       top = play(top, h1);
       shmdt(top);
+
       //change turn
       *tc += *direction;
 
