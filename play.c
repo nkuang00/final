@@ -98,6 +98,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
   turn_end = shmat(turn_end_shm, 0, 0);
   //if player needs to draw cards/stack plus or whatever shit:
+  printf("draw val: %d\n",*draw_val);
   if (*draw_val != 0){
     shmdt(draw_val);
     return play_cards_plus(input, top, h);
@@ -120,6 +121,53 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
       return top;
     }
     if (playing->size > 0){
+
+      //if card is a skip
+      if(input[1] == 'S') {
+
+        //get turn count
+        int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
+        if (tc_key == -1){
+          printf("error tc_key %d: %s\n", errno, strerror(errno));
+          exit(1);
+        }
+        int * tc = shmat(tc_key, 0, 0);
+
+        //get direction
+        int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
+        if (dir_key == -1){
+          printf("error dir_key %d: %s\n", errno, strerror(errno));
+          exit(1);
+        }
+        int * direction = shmat(dir_key, 0, 0);
+
+        //change the turn an extra time
+        *tc += *direction;
+      }
+
+      //if card is a reverse
+      if(input[1] == 'R') {
+
+        //get turn count
+        int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
+        if (tc_key == -1){
+          printf("error tc_key %d: %s\n", errno, strerror(errno));
+          exit(1);
+        }
+        int * tc = shmat(tc_key, 0, 0);
+
+        //get direction
+        int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
+        if (dir_key == -1){
+          printf("error dir_key %d: %s\n", errno, strerror(errno));
+          exit(1);
+        }
+        int * direction = shmat(dir_key, 0, 0);
+
+        //change the direction
+        *direction *= -1;
+      }
+
       * draw_val += count_draws(playing);
       printf("draw count: %d\n", *draw_val);
       free_card(top);
@@ -135,6 +183,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
 }
 
 struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
+  printf("gets here instead\n");
   int draw_shm;
   int * draw_val;
   draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
@@ -188,6 +237,7 @@ int valid_play_plus(struct hand *p, struct hand * h, struct card * top){
 int valid_play(struct hand * p, struct hand * h, struct card * top){
   //check for repeats
   //we may be able to improve runtime but whatever :')'
+  printf("gets here\n");
   if (contains_repeats(p, h)){
     return 0;
   }
@@ -196,7 +246,9 @@ int valid_play(struct hand * p, struct hand * h, struct card * top){
   int c;
   int t;
   c = colors_match(top, p);
+  printf("colors match: %d\n", c);
   t = types_match(top, p);
+  printf("types match: %d\n", t);
   if (c + t == 0){
     return 0;
   }
