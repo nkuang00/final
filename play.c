@@ -5,7 +5,7 @@ void play(struct card * top){
   struct hand * h1;
   h1 = create_hand(5);
 
-  //while(1){
+  while(1){
     char input[50];
 
     //print current game info
@@ -25,7 +25,7 @@ void play(struct card * top){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("ok bye loser\n");
-      //break;
+      break;
     }
 
     //if draw: draws cards appropriately:
@@ -67,9 +67,9 @@ void play(struct card * top){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("no more cards. you win! :0\n");
-      //break;
+      break;
     }
-  //}
+  }
 }
 
 //playing cards, accepts string input, top card, and h

@@ -12,31 +12,15 @@
 #include <time.h>
 #include <sys/wait.h>
 
-//#include "main.h"
-//#include "play.h"
-#include "headers.h"
-//#include "draw.h"
-//#include "display.h"
-//#include "deck.h"
-
-#include "draw.c"
-#include "play.c"
-#include "deck.c"
-#include "display.c"
-#include "main.c"
-
 #define NUMBER_OF_PLAYERS_KEY 222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
 #define TURN_COUNTER_KEY 22222
 #define DIRECTION_KEY 222222
-#define TOP_KEY 2222222
-#define DRAW_KEY 22222222
 
 int main(){
 
-  int nop_key, wpa_key, tc_key, dir_key, top_key, draw_key;
+  int nop_key, wpa_key, tc_key, dir_key;
   int player_number;
-  int * draw;
   int * direction;
   int * nop;
   int wpa[10];
@@ -45,9 +29,6 @@ int main(){
   int nop_end, wpa_end, tc_end;
   int nop_term, wpa_term, tc_term;
   int i;
-
-  srand(time(0));
-  struct card * top;
 
   nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
 
@@ -95,22 +76,6 @@ int main(){
        exit(1);
      }
      direction = shmat(dir_key, 0, 0);
-
-     //get top card
-      top_key = shmget(TOP_KEY, sizeof(struct card), 0644);
-      if (top_key == -1){
-        printf("error tc_key %d: %s\n", errno, strerror(errno));
-        exit(1);
-      }
-      top = shmat(top_key, 0, 0);
-
-      //get draw
-      draw_key = shmget(DRAW_KEY, sizeof(int), 0644);
-      if (draw_key == -1){
-        printf("error tc_key %d: %s\n", errno, strerror(errno));
-        exit(1);
-      }
-      draw = shmat(draw_key, 0, 0);
 
      //get waiting players array
      wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
@@ -169,23 +134,6 @@ int main(){
     tc = shmat(tc_key, 0, 0);
     *tc = 1;
 
-    //create top card
-    top_key = shmget(TOP_KEY, sizeof(struct card), IPC_CREAT | 0644);
-    if (top_key == -1){
-      printf("error tc_key %d: %s\n", errno, strerror(errno));
-      exit(1);
-    }
-    top = shmat(top_key, 0, 0);
-    top = draw_top();
-
-    //create draw
-      draw_key = shmget(DRAW_KEY, sizeof(int), IPC_CREAT | 0644);
-      if (draw_key == -1){
-        printf("error tc_key %d: %s\n", errno, strerror(errno));
-        exit(1);
-      }
-      draw = shmat(draw_key, 0, 0);
-
     //input to start the game
     printf("Welcome to the card game Tres!\n");
     printf("Enter \"start\" into the terminal at any time to start the game!\n");
@@ -218,8 +166,7 @@ int main(){
       printf("It's your turn\n");
 
       //stand-in for playing cards
-      play(top);
-      //sleep(3);
+      sleep(3);
 
       //change turn
       *tc += *direction;

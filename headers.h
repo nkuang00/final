@@ -9,6 +9,6 @@
 #include <fcntl.h>
 #include <sys/shm.h>
 
-#define DRAW_KEY 22222222
+#define DRAW_KEY 87654321
 #define DRAW_SEG_SIZE sizeof(int)
-//#define DIRECTION 69420
+#define DIRECTION 69420
