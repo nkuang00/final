@@ -1,16 +1,5 @@
 #include "headers.h"
-//struct for cards
-//colors: R, G, Y, B (wilds and +4 will be w)
-//types: 0-9 [v (reverse), s (skip), t (+2), f(+4)]
-struct card {
-  char color;
-  char type;
-};
 
-struct hand {
-    struct card * cards[109];
-    int size;
-};
 
 void add_card(struct card * c, struct hand * h);
 int add_str(char * str, struct hand * h);
