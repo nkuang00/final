@@ -9,7 +9,7 @@ int main(){
   //shuffle_deck
 
 
-  int nop_key, wpa_key, tc_key, dir_key, draw_shm, top_shm;
+  int nop_key, wpa_key, tc_key, dir_key, draw_shm, top_shm, turn_end_shm;
   int player_number;
   int * direction;
   int * nop;
@@ -55,7 +55,7 @@ int main(){
      }
 
      //get draw
-     draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
+     draw_shm = shmget(DRAW_KEY, sizeof(int), 0644);
      if (draw_shm == -1){
        printf("error draw_shm %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -135,6 +135,13 @@ int main(){
      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
      if (draw_shm == -1){
        printf("error draw_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+
+     //create turn end
+     turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+     if (turn_end_shm == -1){
+       printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
        exit(1);
      }
 
