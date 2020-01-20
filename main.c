@@ -237,7 +237,8 @@ int main(){
     //check if someone has won yet
     topc = shmat(topc_shm, 0, 0);
     if (*topc == 'W') {
-      printf("The game is over. Player %d won.\n", *topt - '0');
+      printf("The game is over.\n");
+      exit(0);
     }
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
@@ -276,11 +277,12 @@ int main(){
         int topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
         char * topc = shmat(topc_shm, 0, 0);
         *topc = 'W';
-        int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
-        char * topt = shmat(topt_shm, 0, 0);
-        *topt = player_number + '0';
-      }
+        // int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+        // char * topt = shmat(topt_shm, 0, 0);
+        // *topt = player_number + '0';
 
+        //insert removal code here
+      }
 
       //kill children except own
       for (i = 1; i <= *nop; i++) {
@@ -289,6 +291,8 @@ int main(){
           wpa[i] = 0;
         }
       }
+
+      
 
       shmdt(topc);
       shmdt(topt);
