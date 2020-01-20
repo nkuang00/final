@@ -106,6 +106,12 @@ int main(){
      }
      wpa[player_number] = spoon;
 
+     wpa_term = shmdt(wpa);
+     if (wpa_end == -1){
+       printf("error wpa_end %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+
      //wait for child to die (for game to start)
      wait(NULL);
   }
@@ -204,6 +210,12 @@ int main(){
       kill(wpa[i], SIGKILL);
       wpa[i] = 0;
     }
+    
+    wpa_term = shmdt(wpa);
+    if (wpa_end == -1){
+      printf("error wpa_end %d: %s\n", errno, strerror(errno));
+      exit(1);
+    }
   }
 
   //show game has started, and player number
@@ -219,6 +231,17 @@ int main(){
 
   //needs to be replaced with while the win condition (0 cards in hand) is not met
   while(1) {
+
+    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
+    if (wpa_key == -1){
+      printf("error wpa_key %d: %s\n", errno, strerror(errno));
+      exit(1);
+    }
+    int * wpa = (int *) shmat(wpa_key, 0, 0);
+    if (wpa == NULL){
+      printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
+      exit(1);
+    }
 
     //display current game state
 
@@ -243,12 +266,12 @@ int main(){
       *tc += *direction;
 
       //kill children except own
-      // for (i = 1; i <= *nop; i++) {
-      //   if (i != player_number) {
-      //     kill(wpa[i], SIGKILL);
-      //     wpa[i] = 0;
-      //   }
-      // }
+      for (i = 1; i <= *nop; i++) {
+        if (i != player_number) {
+          kill(wpa[i], SIGKILL);
+          wpa[i] = 0;
+        }
+      }
     }
 
     else {
@@ -260,17 +283,23 @@ int main(){
       //say whose turn it is now
       printf("It is player %d's turn\n", *tc % *nop);
 
-      //just wait till your turn
-      while ((*tc % *nop) != (player_number % *nop)) {
-
-        //if turn changed, exit loop
-        if(*tc > turn_local) {
-            break;
+      int spoon = fork();
+      if (spoon == 0){
+        while(1){
+          printf("Waiting for your turn...\n");
+          sleep(100);
         }
-
-        //otherwise just wait
-        sleep(1);
       }
+
+      wpa[player_number] = spoon;
+
+      wait(NULL);
+    }
+
+    wpa_term = shmdt(wpa);
+    if (wpa_end == -1){
+      printf("error wpa_end %d: %s\n", errno, strerror(errno));
+      exit(1);
     }
   }
 
