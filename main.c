@@ -268,8 +268,12 @@ int main(){
       *topc = top->color;
       *topt = top->type;
 
-      //change turn
+      //change turn (taking into account negative turn)
       *tc += *direction;
+
+      while (*tc < 0) {
+        *tc += *nop;
+      }
 
       //if win condition is met
       if (h1->size == 0) {

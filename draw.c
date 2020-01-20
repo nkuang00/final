@@ -2,12 +2,10 @@
 
 struct card * draw(){
   char colors [4] = {'R', 'G', 'B', 'Y'};
-  //char types [11] = {'0', '1', '2', '3', '4', '5', '6', '7', '+', 'R', 'S'};
-  char types [2] = {'R', 'S'};
+  char types [11] = {'0', '1', '2', '3', '4', '5', '6', '7', '+', 'R', 'S'};
   struct card * c = malloc(sizeof(struct card));
   c->color = colors[rand() % 4];
-  //c->type = types[rand() % 11];
-  c->type = types[rand() % 2];
+  c->type = types[rand() % 11];
   return c;
 }
 
