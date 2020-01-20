@@ -9,7 +9,7 @@ int main(){
   //shuffle_deck
 
 
-  int nop_key, wpa_key, tc_key, dir_key;
+  int nop_key, wpa_key, tc_key, dir_key, draw_shm, top_shm;
   int player_number;
   int * direction;
   int * nop;
@@ -20,8 +20,8 @@ int main(){
   int nop_term, wpa_term, tc_term;
   int i;
 
-  int draw_shm = make_drawshm();
-  int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+  // int draw_shm = make_drawshm();
+  // int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
 
   nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
 
@@ -52,6 +52,20 @@ int main(){
          printf("Waiting for first player to start the game!\n");
          sleep(100);
        }
+     }
+
+     //get draw
+     draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
+     if (draw_shm == -1){
+       printf("error draw_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+
+     //get top
+     top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, 0644);
+     if (top_shm == -1){
+       printf("error top_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
      }
 
      //get turn count
@@ -110,6 +124,20 @@ int main(){
     direction = shmat(dir_key, 0, 0);
     *direction = 1;
 
+    //create top
+     top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+     if (top_shm == -1){
+       printf("error top_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+
+     //create draw
+     draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+     if (draw_shm == -1){
+       printf("error draw_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+
     //create waiting players array
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | IPC_EXCL | 0644);
     if (wpa_key == -1){
@@ -127,6 +155,7 @@ int main(){
     tc = shmat(tc_key, 0, 0);
     *tc = 1;
 
+    //set top
     top = shmat(top_shm, 0, 0);
     top = draw_top();
     printf("\n\n");

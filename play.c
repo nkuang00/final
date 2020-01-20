@@ -4,7 +4,7 @@ struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
   int turn_end_shm;
   int * turn_end;
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
   turn_end = shmat(turn_end_shm, 0, 0);
   *turn_end = 0;
   while(! * turn_end){
@@ -35,7 +35,7 @@ struct card * play(struct card * top, struct hand * h1){
     if (strcmp(input, "draw") == 0){
       int draw_shm;
       int * draw_val;
-      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
       draw_val = shmat(draw_shm, 0, 0);
       if (*draw_val == 0){
         draw_n(1, h1);
@@ -86,10 +86,10 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   int * draw_val;
   int turn_end_shm;
   int * turn_end;
-  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
   draw_val = shmat(draw_shm, 0, 0);
 
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
   turn_end = shmat(turn_end_shm, 0, 0);
   //if player needs to draw cards/stack plus or whatever shit:
   if (*draw_val != 0){
@@ -131,7 +131,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
 struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
   int draw_shm;
   int * draw_val;
-  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
   draw_val = shmat(draw_shm, 0, 0);
   struct hand * playing;
   playing = create_hand(0);
