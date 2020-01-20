@@ -1,11 +1,13 @@
 #include "play.h"
 
-void play(struct card * top){
+struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
-  struct hand * h1;
-  h1 = create_hand(5);
-
-  while(1){
+  int turn_end_shm;
+  int * turn_end;
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+  turn_end = shmat(turn_end_shm, 0, 0);
+  *turn_end = 0;
+  while(! * turn_end){
     char input[50];
 
     //print current game info
@@ -43,6 +45,7 @@ void play(struct card * top){
         *draw_val = 0;
       }
       shmdt(draw_val);
+      * turn_end = 1;
     }
 
     //if entry is not draw/quit
@@ -67,9 +70,12 @@ void play(struct card * top){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("no more cards. you win! :0\n");
-      break;
+      return NULL;
     }
   }
+  shmdt(turn_end);
+  shmctl(turn_end_shm, IPC_RMID, 0);
+  return top;
 }
 
 //playing cards, accepts string input, top card, and h
@@ -78,9 +84,13 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   //gets shm for dumb draw shit
   int draw_shm;
   int * draw_val;
+  int turn_end_shm;
+  int * turn_end;
   draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
   draw_val = shmat(draw_shm, 0, 0);
 
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+  turn_end = shmat(turn_end_shm, 0, 0);
   //if player needs to draw cards/stack plus or whatever shit:
   if (*draw_val != 0){
     shmdt(draw_val);
@@ -109,10 +119,12 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
       free_card(top);
       top = remove_handh(playing, h);
       remove_card(top, playing);
+      *turn_end = 1;
     }
     playing = free_hand(playing);
     shmdt(draw_val);
   }
+  shmdt(turn_end);
   return top;
 }
 

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "draw.h"
 
-void play(struct card * top);
+struct card * play(struct card * top, struct hand * h);
 struct card * play_cards(char * input, struct card * top, struct hand * h);
 struct card * play_cards_plus(char * input, struct card * top, struct hand * h);
 struct hand * create_hand(int n);

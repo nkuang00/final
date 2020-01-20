@@ -17,6 +17,8 @@
 #define DIRECTION 69420
 #define TOP_KEY 87654312
 #define TOP_SEG_SIZE sizeof(struct card)
+#define TURN_END_KEY 1020304
+#define TURN_END_SEG_SIZE sizeof(int)
 
 #define NUMBER_OF_PLAYERS_KEY 222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
