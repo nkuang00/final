@@ -4,12 +4,14 @@ int main(){
 
   srand(time(0));     //needed to draw random cards
   struct card * top;
+  char * topc;
+  char * topt;
 
   //make_deck
   //shuffle_deck
 
 
-  int nop_key, wpa_key, tc_key, dir_key, draw_shm, top_shm, turn_end_shm;
+  int nop_key, wpa_key, tc_key, dir_key, draw_shm, topc_shm, topt_shm, turn_end_shm;
   int player_number;
   int * direction;
   int * nop;
@@ -27,6 +29,8 @@ int main(){
 
   // not first player
   if (nop_key == -1){
+
+    top = malloc(sizeof(struct card));
 
      //get number of players
      nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), 0644);
@@ -62,9 +66,14 @@ int main(){
      }
 
      //get top
-     top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, 0644);
-     if (top_shm == -1){
-       printf("error top_shm %d: %s\n", errno, strerror(errno));
+     topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
+     if (topc_shm == -1){
+       printf("error topc_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+     topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+     if (topt_shm == -1){
+       printf("error topt_shm %d: %s\n", errno, strerror(errno));
        exit(1);
      }
 
@@ -125,9 +134,14 @@ int main(){
     *direction = 1;
 
     //create top
-     top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
-     if (top_shm == -1){
-       printf("error top_shm %d: %s\n", errno, strerror(errno));
+     topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+     if (topc_shm == -1){
+       printf("error topc_shm %d: %s\n", errno, strerror(errno));
+       exit(1);
+     }
+     topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+     if (topt_shm == -1){
+       printf("error topt_shm %d: %s\n", errno, strerror(errno));
        exit(1);
      }
 
@@ -139,11 +153,11 @@ int main(){
      }
 
      //create turn end
-     turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
-     if (turn_end_shm == -1){
-       printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
-       exit(1);
-     }
+     // turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+     // if (turn_end_shm == -1){
+     //   printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
+     //   exit(1);
+     // }
 
     //create waiting players array
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | 0644);
@@ -163,12 +177,16 @@ int main(){
     *tc = 1;
 
     //set top
-    top = shmat(top_shm, 0, 0);
+    topc = shmat(topc_shm, 0, 0);
+    topt = shmat(topt_shm, 0, 0);
     top = draw_top();
     printf("\n\n");
     print_card(top);
     printf("\n\n");
-    shmdt(top);
+    * topc = top->color;
+    * topt = top->type;
+    shmdt(topc);
+    shmdt(topt);
 
 
     //input to start the game
@@ -208,12 +226,18 @@ int main(){
       printf("It's your turn\n");
 
       //stand-in for playing cards
-      top = shmat(top_shm, 0, 0);
-      printf("\n\n");
-      print_card(top);
-      printf("\n\n");
+      topc = shmat(topc_shm, 0, 0);
+      topt = shmat(topt_shm, 0, 0);
+      top->color = *topc;
+      top->type = *topt;
+
+
       top = play(top, h1);
-      shmdt(top);
+      *topc = top->color;
+      *topt = top->type;
+
+      shmdt(topc);
+      shmdt(topt);
 
       //change turn
       *tc += *direction;
@@ -272,7 +296,8 @@ int main(){
 
   rem_drawshm(draw_shm);
   shmdt(top);
-  shmctl(top_shm, IPC_RMID, 0);
+  shmctl(topc_shm, IPC_RMID, 0);
+  shmctl(topt_shm, IPC_RMID, 0);
 
   return 0;
 }

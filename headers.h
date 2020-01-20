@@ -15,12 +15,13 @@
 #define DRAW_KEY 87654321
 #define DRAW_SEG_SIZE sizeof(int)
 #define DIRECTION 69420
-#define TOP_KEY 87654312
-#define TOP_SEG_SIZE sizeof(struct card)
+#define TOPC_KEY 122333
+#define TOPT_KEY 112233
+#define TOP_SEG_SIZE sizeof(char)
 #define TURN_END_KEY 1020304
 #define TURN_END_SEG_SIZE sizeof(int)
 
-#define NUMBER_OF_PLAYERS_KEY 2221
+#define NUMBER_OF_PLAYERS_KEY 2222222
 #define WAITING_PLAYERS_ARRAY_KEY 2222
 #define TURN_COUNTER_KEY 22222
 #define DIRECTION_KEY 222222

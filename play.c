@@ -4,7 +4,12 @@ struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
   int turn_end_shm;
   int * turn_end;
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
+  //turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+  if (turn_end_shm == -1){
+    printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
+    exit(1);
+  }
   turn_end = shmat(turn_end_shm, 0, 0);
   *turn_end = 0;
   while(! * turn_end){
@@ -70,6 +75,7 @@ struct card * play(struct card * top, struct hand * h1){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("no more cards. you win! :0\n");
+      shmdt(turn_end);
       return NULL;
     }
   }
