@@ -12,19 +12,19 @@
 #include <string.h>
 #include <sys/wait.h>
 
-#define DRAW_KEY 87654321
+#define DRAW_KEY 222
 #define DRAW_SEG_SIZE sizeof(int)
 #define DIRECTION 69420
-#define TOPC_KEY 122333
-#define TOPT_KEY 112233
+#define TOPT_KEY 22222
+#define TOPC_KEY 2222
 #define TOP_SEG_SIZE sizeof(char)
 #define TURN_END_KEY 1020304
 #define TURN_END_SEG_SIZE sizeof(int)
 
-#define NUMBER_OF_PLAYERS_KEY 2222222
-#define WAITING_PLAYERS_ARRAY_KEY 2222
-#define TURN_COUNTER_KEY 22222
-#define DIRECTION_KEY 222222
+#define NUMBER_OF_PLAYERS_KEY 222222
+#define WAITING_PLAYERS_ARRAY_KEY 2222222
+#define TURN_COUNTER_KEY 22222222
+#define DIRECTION_KEY 222222222
 
 //struct for cards
 //colors: R, G, Y, B (wilds and +4 will be w)
