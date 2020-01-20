@@ -12,18 +12,21 @@ int main(){
 
 
   int nop_key, wpa_key, tc_key, dir_key, draw_shm, topc_shm, topt_shm, turn_end_shm;
-  int player_number;
+  
+  //moved to headers.h
+  //int player_number;
+
   int * direction;
-  int * nop;
+
+  //moved to headers.h
+  //int * nop;
+
   int wpa[10];
   int * tc;
   char buffer[256];
   int nop_end, wpa_end, tc_end;
   int nop_term, wpa_term, tc_term;
   int i;
-
-  // int draw_shm = make_drawshm();
-  // int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
 
   nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
 
@@ -229,8 +232,13 @@ int main(){
 
 /////////////// After Initialization (Game Started) /////////////////////////
 
-  //needs to be replaced with while the win condition (0 cards in hand) is not met
   while(1) {
+
+    //check if someone has won yet
+    topc = shmat(topc_shm, 0, 0);
+    if (*topc == 'W') {
+      printf("The game is over. Player %d won.\n", *topt - '0');
+    }
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
     if (wpa_key == -1){
@@ -248,22 +256,31 @@ int main(){
     if ((*tc % *nop) == (player_number % *nop)) {
       printf("It's your turn\n");
 
-      //stand-in for playing cards
+      //get top card
       topc = shmat(topc_shm, 0, 0);
       topt = shmat(topt_shm, 0, 0);
       top->color = *topc;
       top->type = *topt;
 
-
+      //play cards
       top = play(top, h1);
       *topc = top->color;
       *topt = top->type;
 
-      shmdt(topc);
-      shmdt(topt);
-
       //change turn
       *tc += *direction;
+
+      //if win condition is met
+      if (h1->size == 0) {
+        printf("Congratulations. You win!\n");
+        int topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
+        char * topc = shmat(topc_shm, 0, 0);
+        *topc = 'W';
+        int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+        char * topt = shmat(topt_shm, 0, 0);
+        *topt = player_number + '0';
+      }
+
 
       //kill children except own
       for (i = 1; i <= *nop; i++) {
@@ -272,13 +289,13 @@ int main(){
           wpa[i] = 0;
         }
       }
+
+      shmdt(topc);
+      shmdt(topt);
     }
 
     else {
       printf("It's not your turn yet\n");
-
-      //save current turn locally
-      int turn_local = *tc;
 
       //say whose turn it is now
       printf("It is player %d's turn\n", *tc % *nop);
@@ -329,11 +346,6 @@ int main(){
   shmctl(topt_shm, IPC_RMID, 0);
 
   return 0;
-}
-
-//shm for draw to keep track of plus count (stackable)
-int make_drawshm(){
-  return shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
 }
 
 //removing shm for draw

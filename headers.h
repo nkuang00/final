@@ -38,3 +38,6 @@ struct hand {
     struct card * cards[109];
     int size;
 };
+
+int player_number;
+int * nop;

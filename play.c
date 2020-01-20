@@ -1,4 +1,7 @@
 #include "play.h"
+//#include "main.c"
+
+int * wpa;
 
 struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
@@ -71,13 +74,44 @@ struct card * play(struct card * top, struct hand * h1){
 
     //if win condition (hand empty):
     //frees shit and exits while loop
-    if (h1->size == 0){
-      h1 = free_hand(h1);
-      top = free_card(top);
-      printf("no more cards. you win! :0\n");
-      shmdt(turn_end);
-      return NULL;
-    }
+    // if (h1->size == 0){
+    //   h1 = free_hand(h1);
+    //   top = free_card(top);
+    //   printf("Congratulations. You win!\n");
+    //   shmdt(turn_end);
+
+    //   //make top card color 'W' to let other players know
+    //   int topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
+    //   char * topc = shmat(topc_shm, 0, 0);
+    //   *topc = 'W';
+
+    //   //make top card type equal to player number
+    //   int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+    //   char * topt = shmat(topt_shm, 0, 0);
+    //   *topt = player_number + '0';
+
+    //   //get wpa
+    //   int wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
+    //   if (wpa_key == -1){
+    //    printf("error wpa_key %d: %s\n", errno, strerror(errno));
+    //    exit(1);
+    //   }
+    //   int * wpa = (int *) shmat(wpa_key, 0, 0);
+    //   if (wpa == NULL){
+    //    printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
+    //    exit(1);
+    //   }
+  
+    //   //kill children
+    //   for (int i = 1; i <= *nop; i++) {
+    //     kill(wpa[i], SIGKILL);
+    //   }
+
+
+    //   //insert removal code here
+
+    //   return NULL;
+    // }
   }
   shmdt(turn_end);
   shmctl(turn_end_shm, IPC_RMID, 0);
@@ -98,7 +132,6 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
   turn_end = shmat(turn_end_shm, 0, 0);
   //if player needs to draw cards/stack plus or whatever shit:
-  printf("draw val: %d\n",*draw_val);
   if (*draw_val != 0){
     shmdt(draw_val);
     return play_cards_plus(input, top, h);
@@ -183,7 +216,6 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
 }
 
 struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
-  printf("gets here instead\n");
   int draw_shm;
   int * draw_val;
   draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
@@ -237,7 +269,6 @@ int valid_play_plus(struct hand *p, struct hand * h, struct card * top){
 int valid_play(struct hand * p, struct hand * h, struct card * top){
   //check for repeats
   //we may be able to improve runtime but whatever :')'
-  printf("gets here\n");
   if (contains_repeats(p, h)){
     return 0;
   }
@@ -246,9 +277,7 @@ int valid_play(struct hand * p, struct hand * h, struct card * top){
   int c;
   int t;
   c = colors_match(top, p);
-  printf("colors match: %d\n", c);
   t = types_match(top, p);
-  printf("types match: %d\n", t);
   if (c + t == 0){
     return 0;
   }
