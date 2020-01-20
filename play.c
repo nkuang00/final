@@ -155,50 +155,54 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
     }
     if (playing->size > 0){
 
-      //if card is a skip
-      if(input[1] == 'S') {
+      //check for skips and reverses
+      for (int i = 0; i < playing->size; i++) {
 
-        //get turn count
-        int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
-        if (tc_key == -1){
-          printf("error tc_key %d: %s\n", errno, strerror(errno));
-          exit(1);
+        //if card is a skip
+        if(playing->cards[i]->type == 'S') {
+
+          //get turn count
+          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
+          if (tc_key == -1){
+            printf("error tc_key %d: %s\n", errno, strerror(errno));
+            exit(1);
+          }
+          int * tc = shmat(tc_key, 0, 0);
+
+          //get direction
+          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
+          if (dir_key == -1){
+            printf("error dir_key %d: %s\n", errno, strerror(errno));
+            exit(1);
+          }
+          int * direction = shmat(dir_key, 0, 0);
+
+          //change the turn an extra time
+          *tc += *direction;
         }
-        int * tc = shmat(tc_key, 0, 0);
 
-        //get direction
-        int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
-        if (dir_key == -1){
-          printf("error dir_key %d: %s\n", errno, strerror(errno));
-          exit(1);
+        //if card is a reverse
+        if(playing->cards[i]->type == 'R') {
+
+          //get turn count
+          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
+          if (tc_key == -1){
+            printf("error tc_key %d: %s\n", errno, strerror(errno));
+            exit(1);
+          }
+          int * tc = shmat(tc_key, 0, 0);
+
+          //get direction
+          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
+          if (dir_key == -1){
+            printf("error dir_key %d: %s\n", errno, strerror(errno));
+            exit(1);
+          }
+          int * direction = shmat(dir_key, 0, 0);
+
+          //change the direction
+          *direction *= -1;
         }
-        int * direction = shmat(dir_key, 0, 0);
-
-        //change the turn an extra time
-        *tc += *direction;
-      }
-
-      //if card is a reverse
-      if(input[1] == 'R') {
-
-        //get turn count
-        int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
-        if (tc_key == -1){
-          printf("error tc_key %d: %s\n", errno, strerror(errno));
-          exit(1);
-        }
-        int * tc = shmat(tc_key, 0, 0);
-
-        //get direction
-        int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
-        if (dir_key == -1){
-          printf("error dir_key %d: %s\n", errno, strerror(errno));
-          exit(1);
-        }
-        int * direction = shmat(dir_key, 0, 0);
-
-        //change the direction
-        *direction *= -1;
       }
 
       * draw_val += count_draws(playing);
