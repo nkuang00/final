@@ -120,14 +120,14 @@ int main(){
        printf("error wpa_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
-     int * wpa = (int *) shmat(wpa_key, 0, 0);
+     int * wpa = shmat(wpa_key, 0, 0);
      if (wpa == NULL){
        printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
        exit(1);
      }
      wpa[player_number] = spoon;
-
-     wpa_term = shmdt(wpa);
+     printf("wpa[%d] = %d\n", player_number, wpa[player_number]);
+     wpa_end = shmdt(wpa);
      if (wpa_end == -1){
        printf("error wpa_end %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -194,7 +194,7 @@ int main(){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
       exit(1);
     }
-    int * wpa = (int *) shmat(wpa_key, 0, 0);
+    int * wpa = shmat(wpa_key, 0, 0);
 
     //create turn count
     tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), IPC_CREAT | 0777);
@@ -225,11 +225,12 @@ int main(){
 
     //tell other players that game has started
     for (i = 2; i <= *nop; i++){
+      printf("wpa[%d] killed init = %d\n", i, wpa[i]);
       kill(wpa[i], SIGKILL);
       wpa[i] = 0;
     }
 
-    wpa_term = shmdt(wpa);
+    wpa_end = shmdt(wpa);
     if (wpa_end == -1){
       printf("error wpa_end %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -267,7 +268,7 @@ int main(){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
       exit(1);
     }
-    int * wpa = (int *) shmat(wpa_key, 0, 0);
+    int * wpa = shmat(wpa_key, 0, 0);
     if (wpa == NULL){
       printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -314,7 +315,9 @@ int main(){
       }
       //kill children except own
       for (i = 1; i <= *nop; i++) {
+        printf("wpa kill? [%d] = %d\n", i, wpa[i]);
         if (i != player_number) {
+          printf("wpa killed [%d] = %d\n", i, wpa[i]);
           kill(wpa[i], SIGKILL);
           wpa[i] = 0;
         }
