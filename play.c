@@ -7,8 +7,8 @@ struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
   int turn_end_shm;
   int * turn_end;
-  //turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0666);
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0666);
+  //turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0777);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0777);
   if (turn_end_shm == -1){
     printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
     exit(1);
@@ -44,7 +44,7 @@ struct card * play(struct card * top, struct hand * h1){
     if (strcmp(input, "draw") == 0){
       int draw_shm;
       int * draw_val;
-      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0666);
+      draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0777);
       draw_val = shmat(draw_shm, 0, 0);
       if (*draw_val == 0){
         draw_n(1, h1);
@@ -82,17 +82,17 @@ struct card * play(struct card * top, struct hand * h1){
     //   shmdt(turn_end);
 
     //   //make top card color 'W' to let other players know
-    //   int topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0666);
+    //   int topc_shm = shmget(TOPC_KEY, TOP_SEG_SIZE, 0777);
     //   char * topc = shmat(topc_shm, 0, 0);
     //   *topc = 'W';
 
     //   //make top card type equal to player number
-    //   int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0666);
+    //   int topt_shm = shmget(TOPT_KEY, TOP_SEG_SIZE, 0777);
     //   char * topt = shmat(topt_shm, 0, 0);
     //   *topt = player_number + '0';
 
     //   //get wpa
-    //   int wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0666);
+    //   int wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0777);
     //   if (wpa_key == -1){
     //    printf("error wpa_key %d: %s\n", errno, strerror(errno));
     //    exit(1);
@@ -127,10 +127,10 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
   int * draw_val;
   int turn_end_shm;
   int * turn_end;
-  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0666);
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0777);
   draw_val = shmat(draw_shm, 0, 0);
 
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0666);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0777);
   turn_end = shmat(turn_end_shm, 0, 0);
   //if player needs to draw cards/stack plus or whatever shit:
   if (*draw_val != 0){
@@ -163,7 +163,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
         if(playing->cards[i]->type == 'S') {
 
           //get turn count
-          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0666);
+          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0777);
           if (tc_key == -1){
             printf("error tc_key %d: %s\n", errno, strerror(errno));
             exit(1);
@@ -171,7 +171,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
           int * tc = shmat(tc_key, 0, 0);
 
           //get direction
-          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0666);
+          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0777);
           if (dir_key == -1){
             printf("error dir_key %d: %s\n", errno, strerror(errno));
             exit(1);
@@ -186,7 +186,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
         if(playing->cards[i]->type == 'R') {
 
           //get turn count
-          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0666);
+          int tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0777);
           if (tc_key == -1){
             printf("error tc_key %d: %s\n", errno, strerror(errno));
             exit(1);
@@ -194,7 +194,7 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
           int * tc = shmat(tc_key, 0, 0);
 
           //get direction
-          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0666);
+          int dir_key = shmget(DIRECTION_KEY, sizeof(int), 0777);
           if (dir_key == -1){
             printf("error dir_key %d: %s\n", errno, strerror(errno));
             exit(1);
@@ -226,9 +226,9 @@ struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
   int turn_end_shm;
   int * turn_end;
 
-  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0666);
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0777);
   turn_end = shmat(turn_end_shm, 0, 0);
-  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0666);
+  draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0777);
   draw_val = shmat(draw_shm, 0, 0);
   struct hand * playing;
   playing = create_hand(0);
