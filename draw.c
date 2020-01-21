@@ -2,19 +2,19 @@
 
 struct card * draw(){
   char colors [4] = {'R', 'G', 'B', 'Y'};
-  char types [11] = {'0', '1', '2', '3', '4', '5', '6', '7', '+', 'R', 'S'};
+  char types [7] = {'0', '1', '2', '3', '+', 'R', 'S'};
   struct card * c = malloc(sizeof(struct card));
   c->color = colors[rand() % 4];
-  c->type = types[rand() % 11];
+  c->type = types[rand() % 7];
   return c;
 }
 
 struct card * draw_top(){
   char colors [4] = {'R', 'G', 'B', 'Y'};
-  char types [8] = {'0', '1', '2', '3', '4', '5', '6', '7'};
+  char types [4] = {'0', '1', '2', '3'};
   struct card * c = malloc(sizeof(struct card));
   c->color = colors[rand() % 4];
-  c->type = types[rand() % 8];
+  c->type = types[rand() % 4];
   return c;
 }
 

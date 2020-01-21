@@ -11,7 +11,7 @@ int add_str(char * str, struct hand * h){
     if (strlen(substr) != 2){
       return 0;
     }
-    if (strchr("RGBY",*(substr))==NULL || strchr("01234567+RS",*(substr + 1))==NULL){
+    if (strchr("RGBY",*(substr))==NULL || strchr("0123+RS",*(substr + 1))==NULL){
       return 0;
     }
 

@@ -25,7 +25,7 @@ int main(){
   char * topt;
   int nop_key, wpa_key, tc_key, dir_key, draw_key, topc_key, topt_key;
   int curr_player;
-  
+
   //moved to headers.h
   //int player_number;
 
@@ -70,7 +70,7 @@ int main(){
      if (spoon == 0){
        while(1){
          printf("Welcome to the card game Tres!\n");
-         printf("Waiting for first player to start the game!\n");
+         printf("Waiting for Player 1 to start the game!\n");
          sleep(100);
        }
      }
@@ -329,6 +329,8 @@ int main(){
           }
           printf("It is player %d's turn.\n", curr_player);
           //print current game info
+          top->color = *topc;
+          top->type = *topt;
           printf("Top card: ");
           print_card(top);
           printf("\n");

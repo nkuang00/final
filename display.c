@@ -10,6 +10,7 @@ void print_intro(){
   printf("the same type as the top card.\n");
   printf("To draw, enter \"draw\" when prompted.\n");
   printf("To quit, enter \"quit\".\n");
+  printf("Refer to the README thing for more detailed instructions.\n");
   printf("Enjoy!\n\n");
 }
 
