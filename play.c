@@ -35,7 +35,7 @@ struct card * play(struct card * top, struct hand * h1){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("ok bye loser\n");
-      
+
       return str_to_card("QQ");
     }
 
@@ -102,7 +102,7 @@ struct card * play(struct card * top, struct hand * h1){
     //    printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
     //    exit(1);
     //   }
-  
+
     //   //kill children
     //   for (int i = 1; i <= *nop; i++) {
     //     kill(wpa[i], SIGKILL);
@@ -223,6 +223,11 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
 struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
   int draw_shm;
   int * draw_val;
+  int turn_end_shm;
+  int * turn_end;
+
+  turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0644);
+  turn_end = shmat(turn_end_shm, 0, 0);
   draw_shm = shmget(DRAW_KEY, DRAW_SEG_SIZE, 0644);
   draw_val = shmat(draw_shm, 0, 0);
   struct hand * playing;
@@ -230,11 +235,13 @@ struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
   if (!add_str(input, playing)){
     printf("error: invalid input. check format of cards\n");
     playing = free_hand(playing);
+    shmdt(turn_end);
     return top;
   }
   if (!valid_play_plus(playing, h, top)){
     printf("error: invalid cards. check sequence of cards\n");
     playing = free_hand(playing);
+    shmdt(turn_end);
     return top;
   }
   if (playing->size > 0){
@@ -243,7 +250,9 @@ struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
     free_card(top);
     top = remove_handh(playing, h);
     remove_card(top, playing);
+    *turn_end = 1;
   }
+  shmdt(turn_end);
   playing = free_hand(playing);
   return top;
 }
