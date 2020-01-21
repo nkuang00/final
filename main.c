@@ -1,11 +1,5 @@
 #include "main.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
 
 void clear(){
   if (!fork()){
@@ -269,7 +263,7 @@ int main(){
       break;
     }
 
-    clear();
+    
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
     if (wpa_key == -1){
@@ -281,8 +275,6 @@ int main(){
       printf("error wpa_shmat %d: %s\n", errno, strerror(errno));
       exit(1);
     }
-
-    //display current game state
 
     if ((*tc % *nop) == (player_number % *nop)) {
       printf("It's your turn\n");
@@ -334,15 +326,23 @@ int main(){
     }
 
     else {
-      printf("It's not your turn yet\n");
+      //printf("It's not your turn yet\n");
 
-      //say whose turn it is now
-      printf("It is player %d's turn\n", *tc % *nop);
+      
 
       int spoon = fork();
       if (spoon == 0){
         while(1){
+          clear();
+          sleep(1);
           printf("Waiting for your turn...\n");
+          //say whose turn it is now
+          printf("It is player %d's turn\n", *tc % *nop);
+          //print current game info
+          printf("top card: ");
+          print_card(top);
+          printf("\n");
+          print_hand(h1);
           sleep(100);
         }
       }
