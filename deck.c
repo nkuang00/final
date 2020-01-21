@@ -94,7 +94,7 @@ struct card * remove_card(struct card * c, struct hand * h){
     }
   }
   if (i == -1){
-    printf("card not removed\n");
+    printf("Card not removed.\n");
     return NULL;
   }
   //h->cards[i] = free_card(h->cards[i]);
@@ -113,7 +113,7 @@ struct card * remove_cardh(struct card * c, struct hand * h){
     }
   }
   if (i == -1){
-    printf("card not removed\n");
+    printf("Card not removed.\n");
     return NULL;
   }
   h->cards[i] = free_card(h->cards[i]);

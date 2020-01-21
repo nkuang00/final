@@ -1,5 +1,4 @@
 #include "play.h"
-//#include "main.c"
 
 int * wpa;
 
@@ -7,7 +6,6 @@ struct card * play(struct card * top, struct hand * h1){
   //h1 is player's hand
   int turn_end_shm;
   int * turn_end;
-  //turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, 0777);
   turn_end_shm = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0777);
   if (turn_end_shm == -1){
     printf("error turn_end_shm %d: %s\n", errno, strerror(errno));
@@ -19,13 +17,13 @@ struct card * play(struct card * top, struct hand * h1){
     char input[50];
 
     //print current game info
-    printf("top card: ");
+    printf("Top card: ");
     print_card(top);
     printf("\n");
     print_hand(h1);
 
     //prompts user for a move and stores the shit in input
-    printf("your move: ");
+    printf("Your move: ");
     fflush(stdout);
     fgets(input, 50, stdin);
     * strchr(input, '\n') = 0;
@@ -34,8 +32,8 @@ struct card * play(struct card * top, struct hand * h1){
     if (strcmp(input, "quit") == 0){
       h1 = free_hand(h1);
       top = free_card(top);
-      printf("ok bye loser\n");
-
+      shmdt(turn_end);
+      shmctl(turn_end_shm, IPC_RMID, 0);
       return str_to_card("QQ");
     }
 
@@ -59,16 +57,8 @@ struct card * play(struct card * top, struct hand * h1){
 
     //if entry is not draw/quit
     else{
-
-      //if help: print help info
-      if (strcmp(input, "help") == 0){
-        print_help();
-      }
-
       //interprets input as dumb hand to check for valid input
-      else{
-        top = play_cards(input, top, h1);
-      }
+      top = play_cards(input, top, h1);
     }
 
     printf("\n");
@@ -145,12 +135,12 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
     struct hand * playing;
     playing = create_hand(0);
     if (!add_str(input, playing)){
-      printf("error: invalid input. check format of cards\n");
+      printf("Error: Invalid input. Check format of cards.\n");
       playing = free_hand(playing);
       return top;
     }
     if (!valid_play(playing, h, top)){
-      printf("error: invalid cards. check sequence of cards\n");
+      printf("Error: Invalid cards. Check sequence of cards.\n");
       playing = free_hand(playing);
       return top;
     }
@@ -207,7 +197,6 @@ struct card * play_cards(char * input, struct card * top, struct hand * h){
       }
 
       * draw_val += count_draws(playing);
-      printf("draw count: %d\n", *draw_val);
       free_card(top);
       top = remove_handh(playing, h);
       remove_card(top, playing);
@@ -233,20 +222,19 @@ struct card * play_cards_plus(char * input, struct card * top, struct hand * h){
   struct hand * playing;
   playing = create_hand(0);
   if (!add_str(input, playing)){
-    printf("error: invalid input. check format of cards\n");
+    printf("error: invalid input. check format of cards.\n");
     playing = free_hand(playing);
     shmdt(turn_end);
     return top;
   }
   if (!valid_play_plus(playing, h, top)){
-    printf("error: invalid cards. check sequence of cards\n");
+    printf("error: invalid cards. check sequence of cards.\n");
     playing = free_hand(playing);
     shmdt(turn_end);
     return top;
   }
   if (playing->size > 0){
     * draw_val += count_draws(playing);
-    printf("draw count: %d\n", *draw_val);
     free_card(top);
     top = remove_handh(playing, h);
     remove_card(top, playing);

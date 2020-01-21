@@ -13,6 +13,7 @@ void clear(){
     }
   	exit(0);
   }
+  wait(NULL);
 }
 
 int main(){
@@ -22,13 +23,9 @@ int main(){
   struct hand * h1;
   char * topc;
   char * topt;
-
-  //make_deck
-  //shuffle_deck
-
-
   int nop_key, wpa_key, tc_key, dir_key, draw_key, topc_key, topt_key;
-
+  int curr_player;
+  
   //moved to headers.h
   //int player_number;
 
@@ -37,8 +34,9 @@ int main(){
   //moved to headers.h
   //int * nop;
 
-  int wpa[10];
+  int wpa[11];
   int * tc;
+  int * draw_val;
   char buffer[256];
   int nop_end, wpa_end, tc_end, dir_end, draw_end, topc_end, topt_end;
   int nop_term, wpa_term, tc_term, dir_term, draw_term, topc_term, topt_term;
@@ -83,6 +81,7 @@ int main(){
        printf("error draw_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
+     draw_val = shmat(draw_key, 0, 0);
 
      //get top
      topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0777);
@@ -126,7 +125,6 @@ int main(){
        exit(1);
      }
      wpa[player_number] = spoon;
-     printf("wpa[%d] = %d\n", player_number, wpa[player_number]);
      wpa_end = shmdt(wpa);
      if (wpa_end == -1){
        printf("error wpa_end %d: %s\n", errno, strerror(errno));
@@ -178,15 +176,8 @@ int main(){
        printf("error draw_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
-     int * draw_val = shmat(draw_key, 0, 0);
+     draw_val = shmat(draw_key, 0, 0);
      *draw_val = 0;
-
-     //create turn end
-     // turn_end_key = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0777);
-     // if (turn_end_key == -1){
-     //   printf("error turn_end_key %d: %s\n", errno, strerror(errno));
-     //   exit(1);
-     // }
 
     //create waiting players array
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | 0777);
@@ -225,7 +216,6 @@ int main(){
 
     //tell other players that game has started
     for (i = 2; i <= *nop; i++){
-      printf("wpa[%d] killed init = %d\n", i, wpa[i]);
       kill(wpa[i], SIGKILL);
       wpa[i] = 0;
     }
@@ -238,8 +228,8 @@ int main(){
   }
 
   //show game has started, and player number
-  printf("Fantastic! Now the game has begun!\n");
-  printf("Your are player %d\n", player_number);
+  printf("\nFantastic! Now the game has begun!\n");
+  printf("Your are Player %d.\n\n", player_number);
   print_intro();
 
   h1 = create_hand(5);
@@ -251,17 +241,15 @@ int main(){
 
     //check if someone has won yet
     if (*topc == 'W') {
-      printf("The game is over.\n");
+      printf("\nThe game is over.\n");
       break;
     }
 
     //check if someone has quit
     if (*topc == 'Q') {
-      printf("Someone quit.\n The game is over.\n");
+      printf("\nSomeone quit.\nThe game is over.\n");
       break;
     }
-
-
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0777);
     if (wpa_key == -1){
@@ -275,9 +263,14 @@ int main(){
     }
 
     if ((*tc % *nop) == (player_number % *nop)) {
-      printf("It's your turn\n");
 
-      int * draw_val = shmat(draw_key, 0, 0);
+      if (*tc != 1){
+        clear();
+        sleep(0.75);
+      }
+
+      printf("It's your turn.\n");
+
       if (*draw_val == 0) {
         printf("Draw count: 1\n");
       }
@@ -303,21 +296,14 @@ int main(){
 
       //if win condition is met
       if (h1->size == 0) {
-        printf("Congratulations. You win!\n");
+        printf("Congratulations. You win!");
         int topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0777);
         char * topc = shmat(topc_key, 0, 0);
         *topc = 'W';
-        // int topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, 0777);
-        // char * topt = shmat(topt_key, 0, 0);
-        // *topt = player_number + '0';
-
-        //insert removal code here
       }
       //kill children except own
       for (i = 1; i <= *nop; i++) {
-        printf("wpa kill? [%d] = %d\n", i, wpa[i]);
         if (i != player_number) {
-          printf("wpa killed [%d] = %d\n", i, wpa[i]);
           kill(wpa[i], SIGKILL);
           wpa[i] = 0;
         }
@@ -328,18 +314,22 @@ int main(){
     else {
       //printf("It's not your turn yet\n");
 
-
-
       int spoon = fork();
       if (spoon == 0){
-        while(1){
+        if (*tc != 1){
           clear();
-          sleep(1);
+          sleep(0.75);
+        }
+        while(1){
           printf("Waiting for your turn...\n");
           //say whose turn it is now
-          printf("It is player %d's turn\n", *tc % *nop);
+          curr_player = *tc % *nop;
+          if (curr_player == 0){
+            curr_player = *nop;
+          }
+          printf("It is player %d's turn.\n", curr_player);
           //print current game info
-          printf("top card: ");
+          printf("Top card: ");
           print_card(top);
           printf("\n");
           print_hand(h1);
@@ -378,6 +368,11 @@ int main(){
     printf("error dir_end %d: %s\n", errno, strerror(errno));
     exit(1);
   }
+  draw_end = shmdt(draw_val);
+  if (draw_end == -1){
+    printf("error draw_end %d: %s\n", errno, strerror(errno));
+    exit(1);
+  }
   topc_end = shmdt(topc);
   if (topc_end == -1){
     printf("error topc_end %d: %s\n", errno, strerror(errno));
@@ -388,6 +383,7 @@ int main(){
     printf("error topt_end %d: %s\n", errno, strerror(errno));
     exit(1);
   }
+
   if (player_number == 1){
     nop_term = shmctl(nop_key, IPC_RMID, 0);
     if (nop_term == -1){
@@ -426,29 +422,5 @@ int main(){
     }
   }
 
-
-
-
-
-
-
-  //===========================OLD STUFF================================
-
-
-  // int draw_key = make_drawshm();
-  // int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0777);
-  // top = shmat(top_shm, 0, 0);
-  // top = draw_top();     //draws random normal card as a top card
-  //
-  // //when child is killed
-  // print_intro();
-  //
-  // play(top);      //infinte one player shit
-
   return 0;
-}
-
-//removing shm for draw
-void rem_drawshm(int shmd){
-  shmctl(shmd, IPC_RMID, 0);
 }

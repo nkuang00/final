@@ -4,6 +4,5 @@
 #include "deck.h"
 
 void print_intro();
-void print_help();
 void print_card(struct card * c);
 void print_hand(struct hand * h);
