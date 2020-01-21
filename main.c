@@ -209,9 +209,6 @@ int main(){
     topc = shmat(topc_key, 0, 0);
     topt = shmat(topt_key, 0, 0);
     top = draw_top();
-    printf("\n\n");
-    print_card(top);
-    printf("\n\n");
     * topc = top->color;
     * topt = top->type;
 
@@ -263,7 +260,7 @@ int main(){
       break;
     }
 
-    
+
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
     if (wpa_key == -1){
@@ -328,7 +325,7 @@ int main(){
     else {
       //printf("It's not your turn yet\n");
 
-      
+
 
       int spoon = fork();
       if (spoon == 0){
