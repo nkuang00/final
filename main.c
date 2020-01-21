@@ -44,7 +44,7 @@ int main(){
   int nop_term, wpa_term, tc_term, dir_term, draw_term, topc_term, topt_term;
   int i;
 
-  nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
+  nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0666);
 
   // not first player
   if (nop_key == -1){
@@ -52,7 +52,7 @@ int main(){
     top = malloc(sizeof(struct card));
 
      //get number of players
-     nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), 0644);
+     nop_key = shmget(NUMBER_OF_PLAYERS_KEY, sizeof(int), 0666);
      if (nop_key == -1){
        printf("error nop_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -78,19 +78,19 @@ int main(){
      }
 
      //get draw
-     draw_key = shmget(DRAW_KEY, sizeof(int), 0644);
+     draw_key = shmget(DRAW_KEY, sizeof(int), 0666);
      if (draw_key == -1){
        printf("error draw_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
 
      //get top
-     topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
+     topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0666);
      if (topc_key == -1){
        printf("error topc_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
-     topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+     topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, 0666);
      if (topt_key == -1){
        printf("error topt_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -99,7 +99,7 @@ int main(){
      topt = shmat(topt_key, 0, 0);
 
      //get turn count
-     tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0644);
+     tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), 0666);
      if (tc_key == -1){
        printf("error tc_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -107,7 +107,7 @@ int main(){
      tc = shmat(tc_key, 0, 0);
 
      //get direction
-     dir_key = shmget(DIRECTION_KEY, sizeof(int), 0644);
+     dir_key = shmget(DIRECTION_KEY, sizeof(int), 0666);
      if (dir_key == -1){
        printf("error dir_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -115,7 +115,7 @@ int main(){
      direction = shmat(dir_key, 0, 0);
 
      //get waiting players array
-     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
+     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0666);
      if (wpa_key == -1){
        printf("error wpa_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -152,7 +152,7 @@ int main(){
     player_number = 1;
 
     //create direction
-    dir_key = shmget(DIRECTION_KEY, sizeof(int), IPC_CREAT | 0644);
+    dir_key = shmget(DIRECTION_KEY, sizeof(int), IPC_CREAT | 0666);
     if (dir_key == -1){
       printf("error dir_key %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -161,19 +161,19 @@ int main(){
     *direction = 1;
 
     //create top
-     topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+     topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, IPC_CREAT | 0666);
      if (topc_key == -1){
        printf("error topc_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
-     topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+     topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, IPC_CREAT | 0666);
      if (topt_key == -1){
        printf("error topt_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
 
      //create draw
-     draw_key = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0644);
+     draw_key = shmget(DRAW_KEY, DRAW_SEG_SIZE, IPC_CREAT | 0666);
      if (draw_key == -1){
        printf("error draw_key %d: %s\n", errno, strerror(errno));
        exit(1);
@@ -182,14 +182,14 @@ int main(){
      *draw_val = 0;
 
      //create turn end
-     // turn_end_key = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
+     // turn_end_key = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0666);
      // if (turn_end_key == -1){
      //   printf("error turn_end_key %d: %s\n", errno, strerror(errno));
      //   exit(1);
      // }
 
     //create waiting players array
-    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | 0644);
+    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), IPC_CREAT | 0666);
     if (wpa_key == -1){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -197,7 +197,7 @@ int main(){
     int * wpa = (int *) shmat(wpa_key, 0, 0);
 
     //create turn count
-    tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), IPC_CREAT | 0644);
+    tc_key = shmget(TURN_COUNTER_KEY, sizeof(int), IPC_CREAT | 0666);
     if (tc_key == -1){
       printf("error tc_key %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -262,7 +262,7 @@ int main(){
 
 
 
-    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
+    wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0666);
     if (wpa_key == -1){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
       exit(1);
@@ -303,10 +303,10 @@ int main(){
       //if win condition is met
       if (h1->size == 0) {
         printf("Congratulations. You win!\n");
-        int topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0644);
+        int topc_key = shmget(TOPC_KEY, TOP_SEG_SIZE, 0666);
         char * topc = shmat(topc_key, 0, 0);
         *topc = 'W';
-        // int topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, 0644);
+        // int topt_key = shmget(TOPT_KEY, TOP_SEG_SIZE, 0666);
         // char * topt = shmat(topt_key, 0, 0);
         // *topt = player_number + '0';
 
@@ -433,7 +433,7 @@ int main(){
 
 
   // int draw_key = make_drawshm();
-  // int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0644);
+  // int top_shm = shmget(TOP_KEY, TOP_SEG_SIZE, IPC_CREAT | 0666);
   // top = shmat(top_shm, 0, 0);
   // top = draw_top();     //draws random normal card as a top card
   //
