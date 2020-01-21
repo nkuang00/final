@@ -1,5 +1,26 @@
 #include "main.h"
 
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+
+void clear(){
+  if (!fork()){
+    char * clear_array[2];
+    clear_array[0] = "clear";
+    clear_array[1] = NULL;
+  	int error = execvp("clear", clear_array);
+  	if (error == -1){
+  		printf("error clear %d: %s\n", errno, strerror(errno));
+        exit(1);
+    }
+  	exit(0);
+  }
+}
+
 int main(){
 
   srand(time(0));     //needed to draw random cards
@@ -247,6 +268,8 @@ int main(){
       printf("Someone quit.\n The game is over.\n");
       break;
     }
+
+    clear();
 
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
     if (wpa_key == -1){
