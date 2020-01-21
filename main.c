@@ -163,6 +163,8 @@ int main(){
        printf("error draw_key %d: %s\n", errno, strerror(errno));
        exit(1);
      }
+     int * draw_val = shmat(draw_key, 0, 0);
+     *draw_val = 0;
 
      //create turn end
      // turn_end_key = shmget(TURN_END_KEY, TURN_END_SEG_SIZE, IPC_CREAT | 0644);
@@ -261,6 +263,14 @@ int main(){
 
     if ((*tc % *nop) == (player_number % *nop)) {
       printf("It's your turn\n");
+
+      int * draw_val = shmat(draw_key, 0, 0);
+      if (*draw_val == 0) {
+        printf("Draw count: 1\n");
+      }
+      else {
+        printf("Draw count: %d\n", *draw_val);
+      }
 
       //get top card
       top->color = *topc;
