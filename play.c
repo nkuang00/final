@@ -35,7 +35,8 @@ struct card * play(struct card * top, struct hand * h1){
       h1 = free_hand(h1);
       top = free_card(top);
       printf("ok bye loser\n");
-      break;
+      
+      return str_to_card("QQ");
     }
 
     //if draw: draws cards appropriately:

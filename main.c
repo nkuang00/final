@@ -240,6 +240,12 @@ int main(){
       break;
     }
 
+    //check if someone has quit
+    if (*topc == 'Q') {
+      printf("Someone quit.\n The game is over.\n");
+      break;
+    }
+
     wpa_key = shmget(WAITING_PLAYERS_ARRAY_KEY, sizeof(wpa), 0644);
     if (wpa_key == -1){
       printf("error wpa_key %d: %s\n", errno, strerror(errno));
