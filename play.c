@@ -321,6 +321,18 @@ int gen_types_match(struct card * c, struct hand * p){
       return 0;
     }
   }
+  t0 = is_skip(p->cards[0]);
+  for (i = 1; i < p->size; i++){
+    if (t0 != is_skip(p->cards[i])){
+      return 0;
+    }
+  }
+  t0 = is_rev(p->cards[0]);
+  for (i = 1; i < p->size; i++){
+    if (t0 != is_rev(p->cards[i])){
+      return 0;
+    }
+  }
   return 1;
 }
 

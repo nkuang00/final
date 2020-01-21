@@ -129,3 +129,16 @@ int is_plus(struct card * c){
   }
   return 0;
 }
+
+int is_skip(struct card * c){
+  if (c->type == 'S'){
+    return 1;
+  }
+  return 0;
+}
+int is_rev(struct card * c){
+  if (c->type == 'R'){
+    return 1;
+  }
+  return 0;
+}
