@@ -4,6 +4,7 @@ int main(){
 
   srand(time(0));     //needed to draw random cards
   struct card * top;
+  struct hand * h1;
   char * topc;
   char * topt;
 
@@ -226,7 +227,6 @@ int main(){
   printf("Your are player %d\n", player_number);
   print_intro();
 
-  struct hand * h1;
   h1 = create_hand(5);
 
 
@@ -327,7 +327,9 @@ int main(){
 
   }
 
-  free(top);
+  top = free_card(top);
+  h1 = free_hand(h1);
+
   nop_end = shmdt(nop);
   if (nop_end == -1){
     printf("error nop_end %d: %s\n", errno, strerror(errno));
